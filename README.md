@@ -1,5 +1,8 @@
+
+![image](https://github.com/user-attachments/assets/bd44a0bc-3588-4204-97c0-54d7138e5cd4)
+
 # 📌 Online Quiz System
-A **FastAPI + MySQL + React.js** based Online Quiz System that allows users to take quizzes, and admins to create/manage quizzes.
+**FastAPI + MySQL + React.js** based Online Quiz System that allows users to take quizzes, and admins to create/manage quizzes.
 
 ---
 
@@ -57,3 +60,213 @@ Start the MySQL server and log in:
 ```sh
 mysql -u root -p
 ```
+-- 📌 Create Database
+CREATE DATABASE quiz_system;
+USE quiz_system;
+
+-- 1️⃣ Create Users Table
+CREATE TABLE users (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    is_admin BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (id)
+);
+
+-- 🔹 Insert Sample Users
+INSERT INTO users (username, password_hash, is_admin) VALUES
+('admin', 'hashed_password_here', TRUE),
+('user1', 'hashed_password_here', FALSE);
+
+-- 2️⃣ Create Quizzes Table
+CREATE TABLE quizzes (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    total_questions INT NOT NULL,
+    duration INT NOT NULL,
+    PRIMARY KEY (id)
+);
+
+-- 🔹 Insert Sample Quizzes
+INSERT INTO quizzes (title, total_questions, duration) VALUES
+('JavaScript Basics', 10, 15),
+('Python Fundamentals', 12, 20);
+
+-- 3️⃣ Create Questions Table
+CREATE TABLE questions (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    quiz_id INT UNSIGNED NOT NULL,
+    question TEXT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
+);
+
+-- 🔹 Insert Sample Questions
+INSERT INTO questions (quiz_id, question) VALUES
+(1, 'What does CSS stand for?'),
+(1, 'Which HTTP status code means "Not Found"?'),
+(2, 'Who invented Java?');
+
+-- 4️⃣ Create Question Options Table
+CREATE TABLE question_options (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    question_id INT UNSIGNED NOT NULL,
+    option_text TEXT NOT NULL,
+    is_correct TINYINT UNSIGNED DEFAULT '0',
+    PRIMARY KEY (id),
+    FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
+);
+#
+-- 🔹 Insert Sample Options
+INSERT INTO question_options (question_id, option_text, is_correct) VALUES
+(1, 'Computer Style Sheets', 0),
+(1, 'Creative Style Sheets', 0),
+(1, 'Cascading Style Sheets', 1),
+(1, 'Colorful Style Sheets', 0),
+(2, '404', 1),
+(2, '500', 0),
+(2, '200', 0),
+(2, '301', 0);
+#
+-- 5️⃣ Create Quiz Attempts Table
+CREATE TABLE quiz_attempts (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id INT UNSIGNED NOT NULL,
+    quiz_id INT UNSIGNED NOT NULL,
+    score INT DEFAULT 0,
+    status ENUM('in_progress', 'completed') DEFAULT 'in_progress',
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
+);
+#
+-- 🔹 Insert Sample Quiz Attempts
+INSERT INTO quiz_attempts (user_id, quiz_id, score, status) VALUES
+(2, 1, 8, 'completed'),
+(2, 2, 10, 'in_progress');
+
+#
+-- 6️⃣ Create Responses Table
+CREATE TABLE responses (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    attempt_id INT UNSIGNED NOT NULL,
+    question_id INT UNSIGNED NOT NULL,
+    chosen_option_id INT UNSIGNED,
+    is_correct BOOLEAN,
+    PRIMARY KEY (id),
+    FOREIGN KEY (attempt_id) REFERENCES quiz_attempts(id) ON DELETE CASCADE,
+    FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE,
+    FOREIGN KEY (chosen_option_id) REFERENCES question_options(id) ON DELETE CASCADE
+);
+
+-- 🔹 Insert Sample Responses
+INSERT INTO responses (attempt_id, question_id, chosen_option_id, is_correct) VALUES
+(1, 1, 3, 1),
+(1, 2, 1, 1),
+(2, 3, 2, 0);
+-- 📌 Create Database
+CREATE DATABASE quiz_system;
+USE quiz_system;
+#
+-- 1️⃣ Create Users Table
+CREATE TABLE users (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    is_admin BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (id)
+);
+
+-- 🔹 Insert Sample Users
+INSERT INTO users (username, password_hash, is_admin) VALUES
+('admin', 'hashed_password_here', TRUE),
+('user1', 'hashed_password_here', FALSE);
+
+#
+-- 2️⃣ Create Quizzes Table
+CREATE TABLE quizzes (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    total_questions INT NOT NULL,
+    duration INT NOT NULL,
+    PRIMARY KEY (id)
+);
+
+#
+
+-- 🔹 Insert Sample Quizzes
+INSERT INTO quizzes (title, total_questions, duration) VALUES
+('JavaScript Basics', 10, 15),
+('Python Fundamentals', 12, 20);
+
+-- 3️⃣ Create Questions Table
+CREATE TABLE questions (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    quiz_id INT UNSIGNED NOT NULL,
+    question TEXT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
+);
+
+-- 🔹 Insert Sample Questions
+INSERT INTO questions (quiz_id, question) VALUES
+(1, 'What does CSS stand for?'),
+(1, 'Which HTTP status code means "Not Found"?'),
+(2, 'Who invented Java?');
+
+-- 4️⃣ Create Question Options Table
+CREATE TABLE question_options (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    question_id INT UNSIGNED NOT NULL,
+    option_text TEXT NOT NULL,
+    is_correct TINYINT UNSIGNED DEFAULT '0',
+    PRIMARY KEY (id),
+    FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
+);
+
+-- 🔹 Insert Sample Options
+INSERT INTO question_options (question_id, option_text, is_correct) VALUES
+(1, 'Computer Style Sheets', 0),
+(1, 'Creative Style Sheets', 0),
+(1, 'Cascading Style Sheets', 1),
+(1, 'Colorful Style Sheets', 0),
+(2, '404', 1),
+(2, '500', 0),
+(2, '200', 0),
+(2, '301', 0);
+
+-- 5️⃣ Create Quiz Attempts Table
+CREATE TABLE quiz_attempts (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id INT UNSIGNED NOT NULL,
+    quiz_id INT UNSIGNED NOT NULL,
+    score INT DEFAULT 0,
+    status ENUM('in_progress', 'completed') DEFAULT 'in_progress',
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
+);
+
+-- 🔹 Insert Sample Quiz Attempts
+INSERT INTO quiz_attempts (user_id, quiz_id, score, status) VALUES
+(2, 1, 8, 'completed'),
+(2, 2, 10, 'in_progress');
+
+-- 6️⃣ Create Responses Table
+CREATE TABLE responses (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    attempt_id INT UNSIGNED NOT NULL,
+    question_id INT UNSIGNED NOT NULL,
+    chosen_option_id INT UNSIGNED,
+    is_correct BOOLEAN,
+    PRIMARY KEY (id),
+    FOREIGN KEY (attempt_id) REFERENCES quiz_attempts(id) ON DELETE CASCADE,
+    FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE,
+    FOREIGN KEY (chosen_option_id) REFERENCES question_options(id) ON DELETE CASCADE
+);
+
+-- 🔹 Insert Sample Responses
+INSERT INTO responses (attempt_id, question_id, chosen_option_id, is_correct) VALUES
+(1, 1, 3, 1),
+(1, 2, 1, 1),
+(2, 3, 2, 0);
